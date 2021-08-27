@@ -19,6 +19,7 @@ USER errbot
 RUN errbot --init
 
 # cleanup unused default errbot plugins
+# comment out any of the 'RUN rm ...' lines below to keep them
 RUN rm -rf plugins/err-example
 RUN rm /usr/local/lib/python3.9/site-packages/errbot/core_plugins/chatRoom.*
 RUN rm /usr/local/lib/python3.9/site-packages/errbot/core_plugins/flows.*
