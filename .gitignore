@@ -1,4 +1,2 @@
 .vscode
-.terraform
 creds.env
-config.env
