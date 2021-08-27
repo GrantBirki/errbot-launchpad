@@ -77,9 +77,8 @@ The errbot framework supports lots of different backends. For view their setup i
 
 ### Configuring your bot
 
-To configure your bot, you will need to modify your `config.env` and `creds.env` files. To make things easier, there is a `config.example.env` and `creds.example.env` file in the root of this repo.
+To configure your bot, you will need to modify your `config.env` and `creds.env` files. To make things easier, there is a and `creds.example.env` file in the root of this repo to configure your sensitive credentials.
 
-1. Rename `config.example.env` to `config.env` *required
 1. Rename `creds.example.env` to `creds.env` *required
 1. Set `BACKEND=<backend>` *required
 1. Set `CHAT_SERVICE_TOKEN='<token>'` *required
