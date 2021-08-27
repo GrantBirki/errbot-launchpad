@@ -15,7 +15,7 @@
 
 ## About 💡
 
-This project uses [errbot](https://github.com/errbotio/errbot) and [Docker](https://www.docker.com/) to quickly launch your own chatbot in a container.
+This project uses [Errbot](https://github.com/errbotio/errbot) and [Docker](https://www.docker.com/) to quickly launch your own chatbot in a container.
 
 The goal of this project is to make it as easy as possible to launch a minimal, working chatbot.
 
