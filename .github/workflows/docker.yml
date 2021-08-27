@@ -1,0 +1,96 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          app:
+            - 'app/**'
+
+  test:
+
+      needs: [changes]
+      if: ${{ needs.changes.outputs.app == 'true' }}
+
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        working-directory: app
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          echo "cache miss - installing dependencies"
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # - name: Test with pylint
+      #   working-directory: app
+      #   run: |
+      #     sudo apt install pylint -y
+      #     pylint -E app.py -d E0401 || { echo "Failure! - Python Error Checks Failed - $?" ; exit 1; }
+      #     echo "Success! - Python Error Checks Passed"
+
+      - name: python vuln check
+        working-directory: app
+        run: |
+          pip install safety
+          safety check
+
+      # - name: JSON Validation
+      #   working-directory: app
+      #   run: |
+      #     python -mjson.tool plugins/<example>/responses.json > /dev/null
+
+  build:
+
+    needs: [changes, test]
+    if: ${{ needs.changes.outputs.app == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+      - name: 'Build and Push image - ci-test'
+        if: github.event_name == 'pull_request'
+        working-directory: app
+        run: |
+          docker build . -t errbot/errbot:ci-test
+          docker run --rm --env-file ../config.env -e LOCAL_TESTING=True errbot/errbot:ci-test
+
+      - name: 'Build and Push image - latest'
+        if: github.event_name == 'push'
+        working-directory: app
+        run: |
+          docker build . -t errbot/errbot:ci-test
+          docker run --rm --env-file ../config.env -e LOCAL_TESTING=True errbot/errbot:ci-test
