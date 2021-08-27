@@ -2,11 +2,21 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt /app
-RUN pip install -r requirements.txt
-RUN errbot --init
+# install dependencies
+RUN apt update -y && apt upgrade -y
 
-RUN apt-get update -y && apt-get install dnsutils -y
+# setup errbot base
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# create nonroot errbot user and switch to it
+RUN useradd -m errbot
+RUN chown -R errbot:errbot /app
+RUN chown -R errbot:errbot /usr/local/lib/python3.9/site-packages/errbot
+USER errbot
+
+# init errbot
+RUN errbot --init
 
 # cleanup unused default errbot plugins
 RUN rm -rf plugins/err-example
@@ -17,12 +27,12 @@ RUN rm /usr/local/lib/python3.9/site-packages/errbot/core_plugins/backup.*
 RUN rm /usr/local/lib/python3.9/site-packages/errbot/core_plugins/plugins.*
 RUN rm /usr/local/lib/python3.9/site-packages/errbot/core_plugins/textcmds.*
 
-# For DISCORD
-COPY backend /app/backend
+# for discord / other backends
+COPY --chown=errbot:errbot backend /app/backend
 RUN pip install -r /app/backend/err-backend-discord/requirements.txt
 
 # copy local files
-COPY config.py /app/config.py
-COPY plugins /app/plugins
+COPY --chown=errbot:errbot config.py /app/config.py
+COPY --chown=errbot:errbot plugins /app/plugins
 
 ENTRYPOINT ["errbot", "-c", "/app/config.py"]
