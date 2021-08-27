@@ -4,7 +4,7 @@
 
 <h2 align="center">errbot</h1>
 <p align="center">
-  A Dicord chatbot that is easy to deploy and build upon
+  A chatbot that is easy to deploy and build upon
 </p>
 
 <p align="center">
