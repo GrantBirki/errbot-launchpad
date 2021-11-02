@@ -1,24 +1,35 @@
+COLORS = {
+    "red": "#FF0000",
+    "green": "#008000",
+    "yellow": "#FFA500",
+    "blue": "#0000FF",
+    "white": "#FFFFFF",
+    "cyan": "#00FFFF",
+    "black": "#000000",
+}
+
+
 class Discord:
-    """
-    Discord class for handling Discord specific functions
-    Most of these methods are for common Discord functions
-    """
+    def color(self, color):
+        """
+        Gets the hex of a color for send_card() calls
+        """
+        return COLORS[color]
+
     def guild_id(self, msg):
         """
         Returns the guild_id as a an int
         """
         try:
-            return msg.frm.room.__dict__['_guild_id'], None
+            return int(msg.frm.room.__dict__["_guild_id"])
         except AttributeError:
-            return False, 'Please run this command in a Discord channel, not a DM'
+            return False
 
-    def fmt_guild_id(self, guild_raw):
+    def channel_id(self, msg):
         """
-        Formats the guild_raw to a proper guild_id
-
-        Mainly used for formatting when reading from the database
+        Returns the channel ID as an int
         """
-        return int(guild_raw)
+        return int(msg.frm.room.__dict__["_channel_id"])
 
     def handle(self, msg):
         """
@@ -28,7 +39,7 @@ class Discord:
         Example: Birki#0001@bots -> Birki#0001
         Use mention_user to get the ID to mention a user
         """
-        discord_handle = msg.frm.person.split('@')[0]
+        discord_handle = msg.frm.person.split("@")[0]
         return discord_handle
 
     def mention_user(self, msg):
@@ -45,4 +56,4 @@ class Discord:
         Example: 12345678909876543
         """
 
-        return msg.frm.__dict__['_user_id']
+        return msg.frm.__dict__["_user_id"]
