@@ -13,7 +13,7 @@ deepmerge>=0.1.0
 setuptools==57.4.0
 flask==2.0.1
 markdown>=3.3
-requests==2.26.0
+requests==2.32.0
 Pygments>=2.0.2
 jinja2==3.0.1
 slackclient<2.0,>=1.0.5
